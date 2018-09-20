@@ -1,0 +1,239 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.zhaixt</groupId>
+  <artifactId>spark-execution</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <inceptionYear>2008</inceptionYear>
+  <properties>
+    <scala.version>2.7.0</scala.version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>scala-tools.org</id>
+      <name>Scala-Tools Maven2 Repository</name>
+      <url>http://scala-tools.org/repo-releases</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>scala-tools.org</id>
+      <name>Scala-Tools Maven2 Repository</name>
+      <url>http://scala-tools.org/repo-releases</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>2.10.6</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-core_2.10</artifactId>
+      <version>1.6.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-mllib_2.10</artifactId>
+      <version>1.6.0</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming_2.10</artifactId>
+      <version>1.6.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming-kafka_2.10</artifactId>
+      <version>1.6.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-sql_2.10</artifactId>
+      <version>1.6.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.9</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.specs</groupId>
+      <artifactId>specs</artifactId>
+      <version>1.2.5</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>fastjson</artifactId>
+      <version>1.2.9</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>1.9</version>
+    </dependency>
+
+    <!--mongo-spark-->
+    <dependency>
+      <groupId>org.mongodb.spark</groupId>
+      <artifactId>mongo-spark-connector_2.10</artifactId>
+      <version>1.1.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sourceforge.jeval</groupId>
+      <artifactId>jeval</artifactId>
+      <version>0.9.4</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>lt.velykis.maven.skins</groupId>
+      <artifactId>reflow-velocity-tools</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+
+  </dependencies>
+
+
+  <build>
+    <sourceDirectory>src/main/scala</sourceDirectory>
+    <testSourceDirectory>src/test/scala</testSourceDirectory>
+    <plugins>
+
+      <plugin>
+        <groupId>org.scala-tools</groupId>
+        <artifactId>maven-scala-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <scalaVersion>2.10.6</scalaVersion>
+          <args>
+            <arg>-target:jvm-1.5</arg>
+          </args>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.2</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <transformers>
+                <transformer
+                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <!--<mainClass>com.security.antifraud.AnalyzeStreaming</mainClass>-->
+                  <mainClass>com.xfarm.stream.AnalyzeStreamingPrd</mainClass>
+                </transformer>
+                <transformer
+                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>/resources</resource>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!--<plugin>-->
+        <!--<groupId>org.apache.maven.plugins</groupId>-->
+        <!--<artifactId>maven-gpg-plugin</artifactId>-->
+        <!--<version>1.6</version>-->
+        <!--<executions>-->
+          <!--<execution>-->
+            <!--<id>sign-artifacts</id>-->
+            <!--<phase>verify</phase>-->
+            <!--<goals>-->
+              <!--<goal>sign</goal>-->
+            <!--</goals>-->
+          <!--</execution>-->
+        <!--</executions>-->
+        <!--<configuration>-->
+          <!--<keyname>Sean Owen (Cloudera) &lt;sowen@cloudera.com&gt;</keyname>-->
+          <!--<executable>gpg2</executable>-->
+        <!--</configuration>-->
+      <!--</plugin>-->
+
+
+        <!--<plugin>-->
+          <!--<groupId>org.jacoco</groupId>-->
+          <!--<artifactId>jacoco-maven-plugin</artifactId>-->
+          <!--<version>0.7.9</version>-->
+          <!--<executions>-->
+            <!--<execution>-->
+              <!--<id>jacoco-prepare-agent</id>-->
+              <!--<goals>-->
+                <!--<goal>prepare-agent</goal>-->
+              <!--</goals>-->
+              <!--<configuration>-->
+                <!--<append>true</append>-->
+                <!--<includes>-->
+                  <!--<include>com.cloudera.oryx.*</include>-->
+                <!--</includes>-->
+              <!--</configuration>-->
+            <!--</execution>-->
+            <!--<execution>-->
+              <!--<id>jacoco-prepare-agent-integration</id>-->
+              <!--<goals>-->
+                <!--<goal>prepare-agent-integration</goal>-->
+              <!--</goals>-->
+              <!--<configuration>-->
+                <!--<append>true</append>-->
+                <!--<includes>-->
+                  <!--<include>com.cloudera.oryx.*</include>-->
+                <!--</includes>-->
+                <!--&lt;!&ndash; matches default of prepare-agent goal; intended to append &ndash;&gt;-->
+                <!--<destFile>${project.build.directory}/jacoco.exec</destFile>-->
+              <!--</configuration>-->
+            <!--</execution>-->
+            <!--<execution>-->
+              <!--<id>jacoco-report</id>-->
+              <!--<phase>verify</phase>-->
+              <!--<goals>-->
+                <!--<goal>report</goal>-->
+              <!--</goals>-->
+            <!--</execution>-->
+          <!--</executions>-->
+        <!--</plugin>-->
+
+    </plugins>
+  </build>
+
+
+</project>
